@@ -1,0 +1,30 @@
+# Large generated outputs
+output/
+logs/
+**/cache/
+# Exception: Include source code cache module (required for GraphRAG)
+!src/graphrag/cache/
+**/__pycache__/
+*.py[cod]
+.python-version
+.env
+.env.*
+.venv/
+venv/
+env/
+ENV/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+dist/
+build/
+*.egg-info/
+notes
+input/
+# Exception: Include source code input module (required for GraphRAG)
+!src/graphrag/index/input/
+notebooks/
+# Configuration files with sensitive data
+settings.yaml

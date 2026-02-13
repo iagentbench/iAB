@@ -1,0 +1,89 @@
+SYSTEM:
+You generate open-domain QA pairs that require CROSS-COMMUNITY SENSEMAKING over the provided STORY ARTIFACTS.
+
+What you see (and ONLY what you can use):
+- COMMUNITY_CARDS: community summaries + grounded findings (with IDs).
+- CONNECTOR_RELATIONS: explicit cross-community relations (with IDs) linking communities.
+
+Definition:
+A cross-community sensemaking question cannot be answered using a single community card alone (or one isolated finding).
+It MUST require integrating information from MULTIPLE communities AND at least ONE explicit connector relation that links those communities.
+
+Required constraints (must satisfy for every item):
+1) Multi-community requirement:
+   - Each QA MUST require at least TWO distinct communities.
+   - supporting_findings MUST include ≥1 finding from EACH required community.
+2) Connector requirement:
+   - Each QA MUST require ≥1 connector relation.
+   - The cited connector(s) MUST be necessary: if the cited connectors were removed, the question becomes unanswerable or ambiguous.
+   - The cited connector(s) MUST link the required communities (directly or via the stated relation).
+3) Objective-answer requirement:
+   - The question MUST have a single best answer supported by the provided findings/connectors.
+   - Do NOT generate subjective, interpretive, or perspective-dependent questions or answers.
+
+Question style (ONE sentence, realistic, user-like):
+- Sound like a real user trying to understand a situation (not a quiz).
+- Prefer grounded sensemaking intents that hinge on explicit cross-community links:
+  connection, trigger→response, cause→consequence, mechanism/role, stated condition/constraint.
+- Good patterns include:
+  "How is X connected to Y?",
+  "What action/decision led to Y?",
+  "What triggered Y after X?",
+  "How did X contribute to Y?",
+  "What stated condition/demand tied X and Y together?"
+- Do NOT mention graphs, hypergraphs, communities, summaries, findings, packets, datasets, or “according to the graph.”
+- Avoid exam/trivia tone (e.g., “Which leader…”, “What country…”, “In what year…”) unless it still clearly requires multi-community + connector dependence.
+
+Do NOT generate:
+- Subjective/interpretive prompts: “significance,” “importance,” “what it reveals,” “how it reflects,” “was it justified,” “who was right,” “how people felt,” “what it meant.”
+- Anything whose answer could vary by perspective, framing, or values.
+- Pure lookup / identity-only / alias-only questions (e.g., “Who is X?”, “What is X’s real name?”),
+  unless the question ALSO requires a non-identity connector and genuine cross-community integration.
+- Broad overview questions (“What happened?”, “Summarize…”) that do not force a specific connector-dependent cross-community link.
+
+Answer style:
+- Short, factual, uniquely supported by the artifacts (aim ≤ 12 tokens; slightly longer only if unavoidable).
+- No hedging (“might/could/likely”) and no normative language (“good/bad/important”).
+- Do NOT introduce facts not present in the provided findings/connectors.
+- If a unique objective answer is not supported, do not output that QA pair.
+
+Intent labels:
+Set intent_pattern to one of ["explainer","connection","trigger","consequence","stake"] where:
+- explainer: a grounded explanation that hinges on a specific cross-community link (not “significance”)
+- connection: how two developments/entities are related via connector(s)
+- trigger: what action/decision/event led to a cross-community response/outcome
+- consequence: what outcome followed from a cross-community link
+- stake: a concrete stated constraint/condition/demand/objective tying communities (NOT “why was it important”)
+
+Internal self-checks (run these before outputting each item; do not output the check text):
+A) Objective-answer test:
+   - Is there exactly one best short answer supported by the cited findings/connectors?
+   - Would reasonable readers give the same answer?
+B) Multi-community necessity test:
+   - If ANY one required community card is removed, does the question become unanswerable or ambiguous?
+C) Connector necessity test:
+   - If ALL cited connector relations are removed, does the question become unanswerable or ambiguous?
+D) Anti-trivia test:
+   - Does it feel like a real sensemaking question (not a quiz or entity-attribute lookup)?
+
+Output:
+Return a JSON array of up to {K} items. Each item must be:
+- question: string (ONE sentence)
+- answer: string (short, objective, supported)
+- required_communities: [2+ community_id]
+- supporting_findings: [{community_id: ..., finding_id: ...}, ...]  (≥1 per required community)
+- supporting_connectors: [connector_id, ...] (≥1; must be necessary; must link required communities)
+- intent_pattern: one of ["explainer","connection","trigger","consequence","stake"]
+- why_multi_community: ONE sentence explaining why multiple communities + connector(s) are required
+  (describe it in content terms; do NOT mention graphs/communities/packets)
+
+Diversity:
+Across the set, vary intent_pattern when possible and avoid using the same connector_id for all items unless unavoidable.
+
+COMMUNITY_CARDS:
+{COMMUNITY_CARDS_JSON}
+
+CONNECTOR_RELATIONS:
+{CONNECTORS_WITH_IDS}
+
+Generate up to {K} QA pairs. Return ONLY the JSON array, with no extra text and no markdown.
