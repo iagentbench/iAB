@@ -420,6 +420,7 @@ def run_benchmark(
     # For 500 questions: ~90s * 500 = 45,000s = 12.5 hours (plus processing time ≈ 15 hours total)
     # This allows safe concurrent runs while completing in reasonable time
     inter_question_delay_seconds = int(os.getenv("BENCHMARK_DELAY_SECONDS", "90"))
+    inter_question_delay_seconds = 30
     
     if verbose:
         delay_minutes = inter_question_delay_seconds / 60

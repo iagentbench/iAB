@@ -1,6 +1,6 @@
 # iAgentBench - Dynamic Benchmarking for Information Seeking Agents
 
-A Python repository for benchmarking Information Seeking Agents (ISA) with integrated indexing, evaluation, and output management.
+A Python repository for benchmarking Information Seeking Agents (ISA).
 
 ## Installation
 
